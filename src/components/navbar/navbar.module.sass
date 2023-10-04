@@ -1,0 +1,48 @@
+@import '../../stylesheets/variables'
+
+.navbarContainer
+  display: flex
+  align-items: center
+  justify-content: space-between
+
+  height: $NAV_BAR_HEIGHT
+
+  background: #FFFFFF
+  padding: 0 2em
+  font-weight: 500
+
+  a
+    display: flex
+    align-items: center
+
+    transition: opacity 0.1s ease
+
+    &:hover
+      opacity: 0.7
+
+.logo
+  width: 7em
+  padding: 0.35em 1em
+
+  path
+    fill: $PHILO_BLUE
+
+.liveIcon
+  width: 1em
+
+  path
+    fill: $PHILO_BLUE
+
+.liveText
+  color: $PHILO_BLUE
+
+  margin-left: 0.5em
+
+  font-size: 1.3em
+
+@media screen and (max-width: $SCREEN_SMALL)
+  .navbarContainer
+    padding: 0 1em
+
+  .liveText
+    display: none

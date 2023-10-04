@@ -1,0 +1,65 @@
+.playerControls
+  position: absolute
+  top: 0
+
+  width: 100%
+  height: 100%
+
+
+  background: rgba(0,0,0,0.5)
+
+  opacity: 0
+  transition: opacity 0.3s ease
+
+  cursor: none
+
+  .pauseIcon, .playIcon
+    display: none
+
+  &.isActive
+    opacity: 1
+
+    cursor: auto
+
+    .pauseIcon, .playIcon
+      display: block
+
+.playPauseIcon
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+
+  width: 5em
+  margin: auto
+
+  opacity: 0.7
+
+  cursor: pointer
+
+  &:hover
+    opacity: 1
+
+.pauseIcon
+  width: 10%
+
+.playIcon
+  width: 7%
+
+.titleGroup
+  display: flex
+  flex-direction: column
+  align-items: center
+
+  margin-top: 1em
+
+  width: 100%
+
+  opacity: 0.9
+
+  .title
+    font-size: 1.3em
+
+  .title, .subtitle
+    color: #FFFFFF

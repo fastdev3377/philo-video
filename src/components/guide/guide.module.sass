@@ -1,0 +1,47 @@
+@import '../../stylesheets/variables'
+
+.guideContainer
+  display: flex
+  flex-direction: column
+
+  max-height: calc(100vh - #{$NAV_BAR_HEIGHT  })
+
+.timeline
+  width: 4em
+
+  position: relative
+
+.liveMarker
+  position: absolute
+
+  width: 100%
+  border-bottom: 3px solid $PHILO_BLUE
+
+.guide
+  display: flex
+  width: 100%
+
+  overflow: scroll
+
+.guideHeader
+  display: flex
+  align-items: center
+  justify-content: center
+
+  min-height: $NAV_BAR_HEIGHT
+  margin: 0
+
+  font-weight: 400
+  background: rgb(123, 153, 179)
+
+.hour
+  height: 20em
+  padding-top: 1em
+
+  text-align: center
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.65)
+
+
+  &:first-child
+    border-top: 1px solid rgba(0, 0, 0, 0.65)
