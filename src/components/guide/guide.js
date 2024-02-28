@@ -69,7 +69,7 @@ export function Guide() {
           {renderTimeline()}
         </div>
         <div className={styles.presentations}>
-          {scheduleData.map(({ startTime, endTime, video }, idx) => {
+          {scheduleData.map(({ startTime, video }) => {
             const {
               duration, id, thumb, title,
             } = video;
