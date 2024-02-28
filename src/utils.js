@@ -4,6 +4,9 @@ const MS_PER_MINUTE = 60 * SECOND;
 export const US_LANGUAGE_CODE = 'en-US';
 export const NUMERIC = 'numeric';
 
+// height of one hour element in guide view (from styles.timeline)
+export const TIMELINE_HEIGHT = 20; // em
+
 export const calculateLiveMarkerPosition = () => {
   const today = new Date();
   const now = today.getTime();
@@ -68,3 +71,15 @@ export const createScheduleData = videos => {
 
   return schedule;
 };
+
+const timeFormatter = new Intl.DateTimeFormat(US_LANGUAGE_CODE, {
+  hour: '2-digit',
+  hour12: true,
+  minute: '2-digit',
+  second: '2-digit',
+});
+export const formatTime = date => timeFormatter.format(new Date(date));
+
+// Calc the height of guide element based on duration
+// (duration_seconds / seconds_of_one_hour * height_one_hour )
+export const calcHeightByDuration = duration => (duration / (60 * 60)) * TIMELINE_HEIGHT;
