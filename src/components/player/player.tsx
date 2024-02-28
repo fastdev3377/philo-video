@@ -2,12 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { usePreviousValue } from '../../hooks/use-previous';
-import { loadVideo, setIsPaused, setPlayerCanPlay } from '../../redux/actions/player';
-import { getCurrentVideo, getIsPaused } from '../../redux/selectors/player';
+import {
+  loadVideo,
+  setCurrentVideo,
+  setIsPaused,
+  setPlayerCanPlay,
+  setVideoInitialized,
+} from '../../redux/actions/player';
+import { getCurrentVideo, getVideoInitialized, getIsPaused } from '../../redux/selectors/player';
 import { getScheduleData } from '../../redux/selectors/schedule';
 import { AppDispatch } from '../../types/thunk';
-import { SECOND } from '../../utils';
+import { NEXT_VIDEO_PREP_TIME, SECOND } from '../../utils';
 import { PlayerControls } from '../player-controls/player-controls';
+import { useInterval } from '../../hooks/use-interval';
+import { Presentation } from '../../types/presentation';
 
 import styles from './player.module.sass';
 
@@ -21,9 +29,31 @@ export function Player() {
   const previousIsPaused = usePreviousValue(isPaused);
   const currentVideo = useSelector(getCurrentVideo);
   const scheduleData = useSelector(getScheduleData);
+  const isVideoInitialized = useSelector(getVideoInitialized);
 
-  const { video = {} } = currentVideo;
+  const [remaining, setRemaining] = useState(0);
+  const [nextVideo, setNextVideo] = useState<Presentation | null>(null);
+
+  const { video = {}, startTime } = currentVideo || {};
   const { source, thumb } = video;
+
+  const checkRemainingTime = () => {
+    if (!videoElement.current || !video.id) return;
+    // calc the remaining time of current video
+    const newRemaining = videoElement.current.duration - videoElement.current.currentTime;
+    // get the index of current video from scheduleData to get next video data
+    const idx = scheduleData.findIndex((data: Presentation) => data.video.id === video.id);
+    const newNextVideo: Presentation = scheduleData[(idx + 1) % scheduleData.length];
+
+    setRemaining(Math.ceil(newRemaining));
+
+    if (newRemaining < NEXT_VIDEO_PREP_TIME) {
+      if (!nextVideo || newNextVideo.video.id !== nextVideo.video.id) {
+        setNextVideo(newNextVideo);
+      }
+    }
+  };
+  useInterval(checkRemainingTime, SECOND);
 
   useEffect(() => {
     if (scheduleData.length) {
@@ -31,15 +61,33 @@ export function Player() {
     }
   }, []);
 
-  const createEventListener = (event: string, handler: VoidFunction) => {
-    if (videoElement?.current) {
-      videoElement?.current.addEventListener(event, handler);
+  useEffect(() => {
+    if (!video.id || !videoElement.current) return;
+
+    if (!isVideoInitialized) {
+      const now = new Date().getTime();
+      const start = new Date(startTime).getTime();
+      const diff = (now - start) / 1000;
+      if (videoElement.current) videoElement.current.currentTime = diff;
+      dispatch(setVideoInitialized(true));
+    }
+  }, [currentVideo, videoElement.current]);
+
+  const createEventListener = (event: keyof HTMLVideoElementEventMap, handler: VoidFunction) => {
+    if (videoElement.current) {
+      videoElement.current.addEventListener(event, handler);
+    }
+  };
+
+  const removeEventListener = (event: keyof HTMLVideoElementEventMap, handler: VoidFunction) => {
+    if (videoElement.current) {
+      videoElement.current.removeEventListener(event, handler);
     }
   };
 
   const handleUpdatePlayState = () => {
-    if (videoElement?.current) {
-      dispatch(setIsPaused(videoElement?.current.paused));
+    if (videoElement.current) {
+      dispatch(setIsPaused(videoElement.current.paused));
     }
   };
 
@@ -47,8 +95,13 @@ export function Player() {
     dispatch(setPlayerCanPlay());
   };
 
+  const handlePlayEnded = () => {
+    dispatch(setCurrentVideo(nextVideo));
+    setNextVideo(null);
+  };
+
   const handleHideControls = () => {
-    if (videoElement?.current) {
+    if (videoElement.current) {
       setPlayerControlsActive(false);
     }
   };
@@ -62,7 +115,19 @@ export function Player() {
   };
 
   useEffect(() => {
-    if (videoElement?.current) {
+    if (videoElement.current) {
+      createEventListener('ended', handlePlayEnded);
+    }
+
+    return () => {
+      if (videoElement.current) {
+        removeEventListener('ended', handlePlayEnded);
+      }
+    };
+  }, [videoElement.current, nextVideo, currentVideo]);
+
+  useEffect(() => {
+    if (videoElement.current) {
       createEventListener('play', handleUpdatePlayState);
       createEventListener('pause', handleUpdatePlayState);
       createEventListener('canplay', handleCanPlay);
@@ -71,24 +136,25 @@ export function Player() {
     }
 
     return () => {
-      if (videoElement?.current) {
-        videoElement?.current.removeEventListener('play', handleUpdatePlayState);
-        videoElement?.current.removeEventListener('pause', handleUpdatePlayState);
-        videoElement?.current.removeEventListener('canplay', handleCanPlay);
+      if (videoElement.current) {
+        removeEventListener('play', handleUpdatePlayState);
+        removeEventListener('pause', handleUpdatePlayState);
+        removeEventListener('canplay', handleCanPlay);
+        removeEventListener('ended', handlePlayEnded);
       }
 
       if (hideControlsTimeoutRef.current) {
         window.clearTimeout(hideControlsTimeoutRef.current);
       }
     };
-  }, [videoElement?.current]);
+  }, [videoElement.current]);
 
   const handlePlayPause = (play: boolean) => {
-    if (videoElement?.current) {
+    if (videoElement.current) {
       if (play) {
-        videoElement?.current.play();
+        videoElement.current.play();
       } else {
-        videoElement?.current.pause();
+        videoElement.current.pause();
       }
     }
   };
@@ -119,8 +185,25 @@ export function Player() {
         ref={videoElement}
         autoPlay
         src={source}
+        // Setting this as muted for now for preventing errors on autoplay start
+        // https://stackoverflow.com/a/59147330
+        muted
       />
       <PlayerControls playerControlsActive={playerControlsActive} />
+      {nextVideo && (
+        <div className={styles.nextVideo}>
+          <img
+            className={styles.nextVideoThumb}
+            alt={nextVideo.video.title}
+            src={nextVideo.video.thumb}
+          />
+          <span className={styles.nextVideoTitle}>
+            {nextVideo.video.title}
+            <br />
+            {`will be showing in ${remaining}s`}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
