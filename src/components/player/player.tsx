@@ -41,6 +41,7 @@ export function Player() {
     if (!videoElement.current || !video.id) return;
     // calc the remaining time of current video
     const newRemaining = videoElement.current.duration - videoElement.current.currentTime;
+
     // get the index of current video from scheduleData to get next video data
     const idx = scheduleData.findIndex((data: Presentation) => data.video.id === video.id);
     const newNextVideo: Presentation = scheduleData[(idx + 1) % scheduleData.length];
@@ -68,7 +69,10 @@ export function Player() {
       const now = new Date().getTime();
       const start = new Date(startTime).getTime();
       const diff = (now - start) / 1000;
-      if (videoElement.current) videoElement.current.currentTime = diff;
+      if (videoElement.current) {
+        // set the start position of the video for live show
+        videoElement.current.currentTime = diff;
+      }
       dispatch(setVideoInitialized(true));
     }
   }, [currentVideo, videoElement.current]);

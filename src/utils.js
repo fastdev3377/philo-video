@@ -85,7 +85,7 @@ const timeFormatter = new Intl.DateTimeFormat(US_LANGUAGE_CODE, {
 export const formatTime = date => timeFormatter.format(new Date(date));
 
 // Calc the height of guide element based on duration
-// (duration_seconds / seconds_of_one_hour * height_one_hour )
+// (duration_seconds / seconds_of_one_hour * height_one_hour)
 export const calcHeightByDuration = duration => (duration / (60 * 60)) * TIMELINE_HEIGHT;
 
 export const NEXT_VIDEO_PREP_TIME = 15; // second
