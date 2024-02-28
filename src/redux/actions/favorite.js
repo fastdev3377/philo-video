@@ -1,8 +1,8 @@
 export const UPDATE_FAVORITE = 'UPDATE_FAVORITE';
 
-export function updateFavorite({ id, value }) {
+export function updateFavorite(favorite) {
   return {
     type: UPDATE_FAVORITE,
-    favorite: { id, value },
+    favorite,
   };
 }

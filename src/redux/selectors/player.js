@@ -9,3 +9,7 @@ export function getIsPaused({ player }) {
 export function getCanPlay({ player }) {
   return player.canPlay;
 }
+
+export function getVideoInitialized({ player }) {
+  return player.initialized;
+}
