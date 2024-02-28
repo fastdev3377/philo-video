@@ -16,6 +16,9 @@ calcHeightByDuration = duration_seconds / seconds_of_one_hour * height_one_hour
 - We can get the [remaining](src/components/player/player.tsx#L43) time of the current video using ref of the video tag.
 - We can use the index of the current video for getting [next video](src/components/player/player.tsx#L47) information.
 
+### Testing
+- For the quick testing of video naviagtion, we can renaming [short videos](src/data/videos-quick-testing.json) list I created to `videos.json`.
+
 
 ## What I would do if given more time
 - I have focues on the feature implementaion. I would like to spend more time on improving performance, optimizaiton if I have more time. I would like to clean up syntaxes, namings as well.
