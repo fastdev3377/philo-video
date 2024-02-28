@@ -45,3 +45,27 @@
 
   &:first-child
     border-top: 1px solid rgba(0, 0, 0, 0.65)
+
+.presentations
+  flex: 1
+
+.presentation
+  background-size: cover
+  background-position: center
+  padding: 2px 10px
+
+  &:not(:last-child)
+    border-bottom: 2px solid #fff
+
+.presentationTime
+  font-size: 0.8em
+
+.presentationTitle 
+  margin-left: 10px
+
+.presentationFavorite
+  cursor: pointer
+  margin-right: 3px
+
+  &.favorite
+    color: gold
