@@ -73,14 +73,11 @@ export function Guide() {
             const {
               duration, id, thumb, title,
             } = video;
-            // It seems like there are some duplicated ids in sample scheduleData.
-            // For preventing some build warnings defining new unique id with index.
-            const uniqueId = `${id}-${idx}`;
-            const isFavorite = favoriteData[uniqueId];
+            const isFavorite = favoriteData[id];
 
             return (
               <div
-                key={uniqueId}
+                key={id}
                 className={styles.presentation}
                 style={{
                   // set the height of presentation based on duration
@@ -94,7 +91,7 @@ export function Guide() {
                   className={`${styles.presentationFavorite}${
                     isFavorite ? ` ${styles.favorite}` : ''
                   }`}
-                  onClick={() => handleUpdateFavorite({ id: uniqueId, value: !isFavorite })}
+                  onClick={() => handleUpdateFavorite({ id, value: !isFavorite })}
                 >
                   {isFavorite ? '★' : '☆'}
                 </button>

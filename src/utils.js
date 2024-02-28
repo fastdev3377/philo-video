@@ -62,7 +62,11 @@ export const createScheduleData = videos => {
     schedule.push({
       startTime: startTimestamp.replace('Z', ''),
       endTime: endTimestamp.replace('Z', ''),
-      video,
+      video: {
+        ...video,
+        // for creating unique id
+        id: `${video.id}-${videoIndex}`,
+      },
     });
 
     startTime = endTime;
@@ -83,3 +87,5 @@ export const formatTime = date => timeFormatter.format(new Date(date));
 // Calc the height of guide element based on duration
 // (duration_seconds / seconds_of_one_hour * height_one_hour )
 export const calcHeightByDuration = duration => (duration / (60 * 60)) * TIMELINE_HEIGHT;
+
+export const NEXT_VIDEO_PREP_TIME = 15; // second
